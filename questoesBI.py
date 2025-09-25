@@ -52,7 +52,7 @@ despesa_frete = vendasGlobais.groupby(
         ].sum().reset_index().merge(
             transportadoras,
             on="TransportadoraID"
-            ).set_index("TransportadoraNome")["Frete"]
+            ).set_index("TransportadoraNome")["Frete"].sort_values(ascending=False)
 print(despesa_frete)
 
 #5. Quais são os principais clientes (vendas $) do segmento 
@@ -91,7 +91,10 @@ vendedores_descontos = vendasGlobais[
                     "VendedorNome"
                     )[
                         "Desconto"
-                        ].to_frame()
+                        ].to_frame().sort_values(
+                            "Desconto",
+                            ascending=False
+                            )
 print(vendedores_descontos)
 
 # 7. Quais os fornecedores que dão a maior margem de lucro ($) no segmento de 
@@ -212,13 +215,18 @@ principais_clientes_2013 = vendasGlobais[
 print(principais_clientes_2013)
 
 # 10. Na Europa, quanto que se vende ($) para cada país?
+
+paises_da_europa = [ "Austria", "Belgium", "Denmark", "Finland", "France",
+    "Germany", "Ireland", "Italy", "Netherlands", "Norway", "Portugal", "Spain",
+    "Sweden", "Switzerland", "UK"]
+
 print("\n10. Na Europa, quanto que se vende ($) para cada país?")
-vendas_por_pais = vendasGlobais.groupby(
-    "ClientePaís"
-    )[
-        "Vendas"
-        ].sum().reset_index().sort_values(
-            "Vendas",
-            ascending=False
-            )
+vendas_por_pais = (
+    vendasGlobais[vendasGlobais["ClientePaís"].isin(paises_da_europa)]
+    .groupby("ClientePaís")["Vendas"]   
+    .sum()
+    .reset_index()
+    .sort_values("Vendas", ascending=False)
+)
 print(vendas_por_pais)
+
